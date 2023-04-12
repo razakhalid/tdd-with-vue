@@ -57,6 +57,7 @@ describe('Sign Up Page', () => {
 
    });
    describe('Interactions', () => {
+
       it('enables the button when requirements are met', async () => {
          render(SignupPage);
          const passwordInput = screen.queryByLabelText("Password");
@@ -65,10 +66,9 @@ describe('Sign Up Page', () => {
 
          await userEvent.type(passwordInput, "P4ssword");
          await userEvent.type(passwordRepeatInput, "P4ssword");
-
          expect(button).toBeEnabled();
       });
-      it('sends username, email and password to backend on btn click', async () => {
+      it( 'sends username, email and password to backend on btn click', async () => {
 
          // setup server
          let reqBody;
@@ -110,6 +110,39 @@ describe('Sign Up Page', () => {
             email: 'raza@gmail.com',
             password: 'P4ssword'
          });
+      });
+      it(  'does not allow btn click when api call in progress', async () => {
+
+         // setup server
+         let reqBody;
+         let clickCounter = 0;
+         const server = setupServer(
+             rest.post("/api/1.0/users", (req, res, ctx) => {
+                clickCounter += 1;
+                reqBody = req.body;
+                return res(ctx.status(200));
+             })
+         );
+         server.listen();
+
+         render(SignupPage);
+         const usernameInput = screen.queryByLabelText("Username");
+         const emailInput = screen.queryByLabelText("E-mail");
+         const passwordInput = screen.queryByLabelText("Password");
+         const passwordRepeatInput = screen.queryByLabelText("Password Repeat");
+         const button = screen.queryByRole("button", { name: "Sign Up"});
+
+         await userEvent.type(usernameInput, "raza");
+         await userEvent.type(emailInput, "raza@gmail.com");
+         await userEvent.type(passwordInput, "P4ssword");
+         await userEvent.type(passwordRepeatInput, "P4ssword");
+
+         await userEvent.click(button);
+         await userEvent.click(button);
+
+         await server.close();
+
+         expect(clickCounter).toBe(1);
       });
    });
 });

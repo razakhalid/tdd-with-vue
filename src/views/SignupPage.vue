@@ -27,7 +27,7 @@
     />
 
     <button
-        :disabled="isDisabledComputed"
+        :disabled="isDisabledComputed || loading"
         @click="submit"
     >
       Sign Up
@@ -41,6 +41,7 @@ export default {
   name: "SignupPage",
   data() {
     return {
+      loading: false,
       username: '',
       email: '',
       password: '',
@@ -55,25 +56,26 @@ export default {
   methods: {
     submit(evt) {
       evt.preventDefault();
-      // axios.post('/api/1.0/users', {
-      //   username: this.username,
-      //   email: this.email,
-      //   password: this.password
-      // });
-
-      const reqBody = {
+      this.loading = true;
+      axios.post('/api/1.0/users', {
         username: this.username,
         email: this.email,
         password: this.password
-      }
-
-      fetch("/api/1.0/users", {
-        method: "POST",
-        body: JSON.stringify(reqBody),
-        headers: {
-          "Content-Type": "application/json"
-        }
       });
+
+      // const reqBody = {
+      //   username: this.username,
+      //   email: this.email,
+      //   password: this.password
+      // }
+      //
+      // fetch("/api/1.0/users", {
+      //   method: "POST",
+      //   body: JSON.stringify(reqBody),
+      //   headers: {
+      //     "Content-Type": "application/json"
+      //   }
+      // });
     }
   }
 }
