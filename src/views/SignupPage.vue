@@ -1,38 +1,42 @@
 <template>
-  <form>
-    <h1>Sign Up</h1>
+  <div>
+    <form data-testid="signup-form" v-show="!signupSuccess">
+      <h1>Sign Up</h1>
 
-    <label for="username">Username</label>
-    <input id="username" type="text" name="username" v-model="username"/>
+      <label for="username">Username</label>
+      <input id="username" type="text" name="username" v-model="username"/>
 
-    <label for="email">E-mail</label>
-    <input id="email" type="email" name="email" v-model="email"/>
+      <label for="email">E-mail</label>
+      <input id="email" type="email" name="email" v-model="email"/>
 
-    <label
-        for="password"
-    >Password</label>
-    <input
-        id="password"
-        type="password"
-        name="password"
-        @input="(event) => password = event.target.value"
-    />
+      <label
+          for="password"
+      >Password</label>
+      <input
+          id="password"
+          type="password"
+          name="password"
+          @input="(event) => password = event.target.value"
+      />
 
-    <label for="password-repeat">Password Repeat</label>
-    <input
-        id="password-repeat"
-        type="password"
-        name="password-repeat"
-        @input="(event) => passwordRepeat = event.target.value"
-    />
+      <label for="password-repeat">Password Repeat</label>
+      <input
+          id="password-repeat"
+          type="password"
+          name="password-repeat"
+          @input="(event) => passwordRepeat = event.target.value"
+      />
 
-    <button
-        :disabled="isDisabledComputed || loading"
-        @click="submit"
-    >
-      Sign Up
-    </button>
-  </form>
+      <button
+          :disabled="isDisabledComputed || loading"
+          @click="submit"
+      >
+        <span v-if="loading" role="status">Loading...</span>
+        Sign Up
+      </button>
+    </form>
+    <div v-show="signupSuccess">Please check your email to activate your account</div>
+  </div>
 </template>
 
 <script>
@@ -45,7 +49,8 @@ export default {
       username: '',
       email: '',
       password: '',
-      passwordRepeat: ''
+      passwordRepeat: '',
+      signupSuccess: false
     }
   },
   computed: {
@@ -61,6 +66,10 @@ export default {
         username: this.username,
         email: this.email,
         password: this.password
+      }).then(() => {
+        this.signupSuccess = true;
+      }).catch(() => {
+        
       });
 
       // const reqBody = {

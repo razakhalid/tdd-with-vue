@@ -1,5 +1,5 @@
 import SignupPage from "../../src/views/SignupPage.vue";
-import { render, screen } from "@testing-library/vue";
+import { render, screen, waitFor } from "@testing-library/vue";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 // import axios from 'axios';
@@ -118,12 +118,10 @@ describe('Sign Up Page', () => {
       it(  'does not allow btn click when api call in progress', async () => {
 
          // setup server
-         let reqBody;
          let clickCounter = 0;
          const server = setupServer(
              rest.post("/api/1.0/users", (req, res, ctx) => {
                 clickCounter += 1;
-                reqBody = req.body;
                 return res(ctx.status(200));
              })
          );
@@ -139,6 +137,80 @@ describe('Sign Up Page', () => {
          await server.close();
 
          expect(clickCounter).toBe(1);
+      });
+      it(  'hides spinner when no api call', async () => {
+
+         await setup();
+         const spinner = screen.queryByRole("status");
+         expect(spinner).not.toBeInTheDocument();
+
+
+      });
+      it(  'displays account activation info after signup', async () => {
+
+         // setup server
+         const server = setupServer(
+             rest.post("/api/1.0/users", (req, res, ctx) => {
+                return res(ctx.status(200));
+             })
+         );
+         server.listen();
+
+         await setup();
+
+         const button = screen.queryByRole("button", { name: "Sign Up"});
+
+         await userEvent.click(button);
+         await server.close();
+
+         const text = await screen.findByText("Please check your email to activate your account");
+         expect(text).toBeVisible();
+      });
+      it(  'hides account activation info before signup', async () => {
+         await setup();
+
+         const text = screen.queryByText("Please check your email to activate your account");
+         expect(text).not.toBeVisible();
+      });
+      it(  'hides account activation info after failing signup', async () => {
+         // setup server
+         const server = setupServer(
+             rest.post("/api/1.0/users", (req, res, ctx) => {
+                // return res(ctx.status(400));
+             })
+         );
+         server.listen();
+
+         await setup();
+
+         const button = screen.queryByRole("button", { name: "Sign Up"});
+         await userEvent.click(button);
+         await server.close();
+
+         const text = screen.queryByText("Please check your email to activate your account");
+
+         expect(text).not.toBeVisible();
+      });
+      it(  'hides signup form after signup', async () => {
+         // setup server
+         const server = setupServer(
+             rest.post("/api/1.0/users", (req, res, ctx) => {
+                return res(ctx.status(200));
+             })
+         );
+         server.listen();
+
+         await setup();
+
+         const button = screen.queryByRole("button", { name: "Sign Up"});
+         const form = screen.queryByTestId("signup-form");
+
+         await userEvent.click(button);
+         await server.close();
+
+         await waitFor(() => {
+            expect(form).not.toBeVisible();
+         });
       });
    });
 });
