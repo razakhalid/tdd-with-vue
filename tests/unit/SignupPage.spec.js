@@ -126,8 +126,6 @@ describe('Sign Up Page', () => {
 
          await setup();
 
-
-
          await userEvent.click(button);
          await userEvent.click(button);
 
@@ -138,19 +136,10 @@ describe('Sign Up Page', () => {
          await setup();
          const spinner = screen.queryByRole("status");
          expect(spinner).not.toBeInTheDocument();
-
-
       });
       it(  'displays account activation info after signup', async () => {
-
-
-
          await setup();
-
-
-
          await userEvent.click(button);
-
 
          const text = await screen.findByText("Please check your email to activate your account");
          expect(text).toBeVisible();
@@ -170,14 +159,65 @@ describe('Sign Up Page', () => {
          );
 
          await setup();
-
-
          await userEvent.click(button);
 
-
          const text = screen.queryByText("Please check your email to activate your account");
-
          expect(text).not.toBeVisible();
+      });
+      it(  'displays validation msg for username', async () => {
+
+         server.use(
+             rest.post("/api/1.0/users", (req, res, ctx) => {
+                return res(ctx.status(400), ctx.json({
+                   validationErrors: {
+                      username: 'Username cannot be null'
+                   }
+                }));
+             })
+         );
+
+         await setup();
+         await userEvent.click(button);
+
+         const text = await screen.findByText("Username cannot be null");
+         expect(text).toBeInTheDocument();
+      });
+      it(  'hides spinner after error response received', async () => {
+
+         server.use(
+             rest.post("/api/1.0/users", (req, res, ctx) => {
+                return res(ctx.status(400), ctx.json({
+                   validationErrors: {
+                      username: 'Username cannot be null'
+                   }
+                }));
+             })
+         );
+
+         await setup();
+         await userEvent.click(button);
+
+         await screen.findByText("Username cannot be null");
+         const spinner = screen.queryByRole("status");
+         expect(spinner).not.toBeInTheDocument();
+      });
+      it(  'enables button after error response received', async () => {
+
+         server.use(
+             rest.post("/api/1.0/users", (req, res, ctx) => {
+                return res(ctx.status(400), ctx.json({
+                   validationErrors: {
+                      username: 'Username cannot be null'
+                   }
+                }));
+             })
+         );
+
+         await setup();
+         await userEvent.click(button);
+
+         await screen.findByText("Username cannot be null");
+         expect(button).toBeEnabled();
       });
       xit(  'hides signup form after signup', async () => {
 
@@ -190,6 +230,5 @@ describe('Sign Up Page', () => {
             expect(form).not.toBeInTheDocument();
          });
       });
-
    });
 });

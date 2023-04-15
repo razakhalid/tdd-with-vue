@@ -3,8 +3,12 @@
     <form data-testid="signup-form" v-show="!signupSuccess">
       <h1>Sign Up</h1>
 
-      <label for="username">Username</label>
-      <input id="username" type="text" name="username" v-model="username"/>
+      <Input
+          label="Username"
+          id="username"
+          :help="errors && errors.username"
+          @custom-input="onChangeUsername"
+      ></Input>
 
       <label for="email">E-mail</label>
       <input id="email" type="email" name="email" v-model="email"/>
@@ -32,7 +36,9 @@
           @click="submit"
       >
         <span v-if="loading" role="status">Loading...</span>
-        Sign Up
+        <span
+            v-else
+        >Sign Up</span>
       </button>
     </form>
     <div v-show="signupSuccess">Please check your email to activate your account</div>
@@ -41,6 +47,7 @@
 
 <script>
 import axios from 'axios';
+import Input from '../components/Input.vue';
 export default {
   name: "SignupPage",
   data() {
@@ -50,7 +57,11 @@ export default {
       email: '',
       password: '',
       passwordRepeat: '',
-      signupSuccess: false
+      signupSuccess: false,
+      errors: {
+        username: ''
+      },
+      disabled: true
     }
   },
   computed: {
@@ -68,24 +79,18 @@ export default {
         password: this.password
       }).then(() => {
         this.signupSuccess = true;
-      }).catch(() => {
-        
+      }).catch(err => {
+        if (err.response.status === 400) this.errors = err.response.data.validationErrors;
+        this.loading = false;
+        this.disabled = false;
       });
-
-      // const reqBody = {
-      //   username: this.username,
-      //   email: this.email,
-      //   password: this.password
-      // }
-      //
-      // fetch("/api/1.0/users", {
-      //   method: "POST",
-      //   body: JSON.stringify(reqBody),
-      //   headers: {
-      //     "Content-Type": "application/json"
-      //   }
-      // });
+    },
+    onChangeUsername(username) {
+      this.username = username;
     }
+  },
+  components: {
+    Input
   }
 }
 </script>
