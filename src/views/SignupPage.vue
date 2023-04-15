@@ -10,18 +10,20 @@
           @custom-input="onChangeUsername"
       ></Input>
 
-      <label for="email">E-mail</label>
-      <input id="email" type="email" name="email" v-model="email"/>
+      <Input
+          label="E-mail"
+          id="email"
+          :help="errors && errors.email"
+          @custom-input="onChangeEmail"
+      ></Input>
 
-      <label
-          for="password"
-      >Password</label>
-      <input
+      <Input
+          label="Password"
           id="password"
           type="password"
-          name="password"
-          @input="(event) => password = event.target.value"
-      />
+          :help="errors && errors.password"
+          @custom-input="onChangePassword"
+      ></Input>
 
       <label for="password-repeat">Password Repeat</label>
       <input
@@ -87,6 +89,12 @@ export default {
     },
     onChangeUsername(username) {
       this.username = username;
+    },
+    onChangeEmail(email) {
+      this.email = email;
+    },
+    onChangePassword(password) {
+      this.password = password;
     }
   },
   components: {

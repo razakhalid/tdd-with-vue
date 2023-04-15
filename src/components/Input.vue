@@ -2,9 +2,9 @@
   <div>
     <label :for="id">{{ label }}</label>
     <input
-        id="username"
-        type="text"
-        name="username"
+        :id="id"
+        :type="type"
+        :name="id"
         @input="onChange"
         :class="{ 'is-invalid' : help }"
     />
@@ -13,14 +13,14 @@
     >{{ help }}</span>
   </div>
 </template>
-
 <script>
 export default {
   name: "Input",
   props: {
     label: String,
     id: String,
-    help: String
+    help: String,
+    type: String
   },
   emits: ['custom-input'],
   methods: {
