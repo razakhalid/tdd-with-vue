@@ -10,6 +10,7 @@
     />
     <span
         class="invalid-feedback"
+        v-if="help"
     >{{ help }}</span>
   </div>
 </template>

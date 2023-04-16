@@ -1,46 +1,46 @@
 <template>
   <div>
     <form data-testid="signup-form" v-show="!signupSuccess">
-      <h1>Sign Up</h1>
+      <h1>{{ $t('signup') }}</h1>
 
       <Input
-          label="Username"
+          :label="$t('username')"
           id="username"
           :help="errors && errors.username"
           @custom-input="onChangeUsername"
       ></Input>
 
       <Input
-          label="E-mail"
+          :label="$t('email')"
           id="email"
           :help="errors && errors.email"
           @custom-input="onChangeEmail"
       ></Input>
 
       <Input
-          label="Password"
+          :label="$t('password')"
           id="password"
           type="password"
           :help="errors && errors.password"
           @custom-input="onChangePassword"
       ></Input>
 
-      <label for="password-repeat">Password Repeat</label>
-      <input
+      <Input
+          :label="$t('passwordRepeat')"
           id="password-repeat"
           type="password"
-          name="password-repeat"
-          @input="(event) => passwordRepeat = event.target.value"
-      />
+          :help="hasPasswordMismatch ? 'Password mismatch' : ''"
+          @custom-input="onChangePasswordRepeat"
+      ></Input>
 
       <button
           :disabled="isDisabledComputed || loading"
           @click="submit"
       >
-        <span v-if="loading" role="status">Loading...</span>
+        <span v-if="loading" role="status">{{ $t('loading') }}}</span>
         <span
             v-else
-        >Sign Up</span>
+        >{{ $t('signup') }}</span>
       </button>
     </form>
     <div v-show="signupSuccess">Please check your email to activate your account</div>
@@ -61,7 +61,9 @@ export default {
       passwordRepeat: '',
       signupSuccess: false,
       errors: {
-        username: ''
+        username: '',
+        email: '',
+        password: ''
       },
       disabled: true
     }
@@ -69,6 +71,20 @@ export default {
   computed: {
     isDisabledComputed() {
       return !(this.password && this.passwordRepeat && this.password === this.passwordRepeat);
+    },
+    hasPasswordMismatch() {
+      return this.password !== this.passwordRepeat;
+    }
+  },
+  watch: {
+    username() {
+      delete this.errors.username;
+    },
+    email() {
+      delete this.errors.email;
+    },
+    password() {
+      delete this.errors.password;
     }
   },
   methods: {
@@ -95,6 +111,9 @@ export default {
     },
     onChangePassword(password) {
       this.password = password;
+    },
+    onChangePasswordRepeat(passwordRepeat) {
+      this.passwordRepeat = passwordRepeat;
     }
   },
   components: {

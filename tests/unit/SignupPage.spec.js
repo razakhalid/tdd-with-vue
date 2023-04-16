@@ -6,11 +6,16 @@ import userEvent from "@testing-library/user-event";
 import "whatwg-fetch";
 import { setupServer } from "msw/node";
 import { rest } from "msw";
+import i18n from '../../src/i18n/i18n';
 
 describe('Sign Up Page', () => {
    describe('Layout', () => {
-      it("has a header that says 'Sign Up'", () => {
-         render(SignupPage);
+      fit("has a header that says 'Sign Up'", () => {
+         render(SignupPage, {
+            global: {
+               plugins: [i18n]
+            }
+         });
          const header = screen.queryByRole("heading", { name: "Sign Up"});
          expect(header).not.toBeNull();
       });
@@ -76,13 +81,13 @@ describe('Sign Up Page', () => {
       })
       afterAll(() => server.close());
 
-      let button;
+      let button, passwordInput, passwordRepeatInput, usernameInput;
       const setup = async function () {
          render(SignupPage);
-         const usernameInput = screen.queryByLabelText("Username");
+         usernameInput = screen.queryByLabelText("Username");
          const emailInput = screen.queryByLabelText("E-mail");
-         const passwordInput = screen.queryByLabelText("Password");
-         const passwordRepeatInput = screen.queryByLabelText("Password Repeat");
+         passwordInput = screen.queryByLabelText("Password");
+         passwordRepeatInput = screen.queryByLabelText("Password Repeat");
          button = screen.queryByRole("button", { name: "Sign Up"});
          await userEvent.type(usernameInput, "raza");
          await userEvent.type(emailInput, "raza@gmail.com");
@@ -220,6 +225,35 @@ describe('Sign Up Page', () => {
 
          await screen.findByText("Username cannot be null");
          expect(button).toBeEnabled();
+      });
+      it('displays mismatch msg for password repeat', async function () {
+         server.use(generateValidationError("passwordRepeat", "Password mismatch"));
+
+         await setup();
+
+         // override inputs
+         await userEvent.type(passwordInput, "P4ssword");
+         await userEvent.type(passwordRepeatInput, "P4sword");
+
+         const text = await screen.findByText("Password mismatch");
+         expect(text).toBeInTheDocument();
+      });
+      xit.each`
+      field | msg                                  | label
+      ${'username'} | ${'Username cannot be null'} | ${'Username'}
+      ${'email'} | ${'Email cannot be null'}       | ${'Email'}
+      ${'password'} | ${'Password cannot be null'} | ${'Password'}
+      `(  'clears validation error after $field field is updated', async ({ field, msg, label}) => {
+
+         server.use(generateValidationError(field, msg));
+
+         await setup();
+         await userEvent.click(button);
+
+         const text = await screen.findByText(msg);
+         const input = screen.queryByLabelText(label);
+         await userEvent.type(input, "updated");
+         expect(text).not.toBeInTheDocument();
       });
       xit(  'hides signup form after signup', async () => {
 
