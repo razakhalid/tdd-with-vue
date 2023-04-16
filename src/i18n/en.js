@@ -4,5 +4,6 @@ module.exports = {
   "email": "E-mail",
   "password": "Password",
   "passwordRepeat": "Password Repeat",
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "passwordMismatch": "Password must match"
 }

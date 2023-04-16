@@ -4,5 +4,6 @@ module.exports = {
   "email":"[ol] Email",
   "password":"[ol] Password",
   "passwordRepeat":"[ol] Password Repeat",
-  "loading":"[ol] Loading..."
+  "loading":"[ol] Loading...",
+  "passwordMismatch": "[ol] Password must match"
 }

@@ -11,6 +11,26 @@ const en = require('@/i18n/en.js');
 const ol = require('@/i18n/ol.js');
 import LanguageSelector from "@/components/LanguageSelector.vue";
 
+// setup server
+let reqBody;
+let clickCounter = 0;
+let acceptLanguageHeader;
+const server = setupServer(
+    rest.post("/api/1.0/users", (req, res, ctx) => {
+       reqBody = req.body;
+       clickCounter += 1;
+       acceptLanguageHeader = req.headers.get("Accept-Language")
+       return res(ctx.status(200));
+    })
+);
+
+beforeAll(() => server.listen());
+beforeEach(() => {
+   clickCounter = 0;
+   server.resetHandlers();
+})
+afterAll(() => server.close());
+
 describe('Sign Up Page', () => {
    describe('Layout', () => {
       const setup = function () {
@@ -69,24 +89,6 @@ describe('Sign Up Page', () => {
 
    });
    describe('Interactions', () => {
-
-      // setup server
-      let reqBody;
-      let clickCounter = 0;
-      const server = setupServer(
-          rest.post("/api/1.0/users", (req, res, ctx) => {
-             reqBody = req.body;
-             clickCounter += 1;
-             return res(ctx.status(200));
-          })
-      );
-
-      beforeAll(() => server.listen());
-      beforeEach(() => {
-         clickCounter = 0;
-         server.resetHandlers();
-      })
-      afterAll(() => server.close());
 
       let button, passwordInput, passwordRepeatInput, usernameInput;
       const setup = async function () {
@@ -246,7 +248,7 @@ describe('Sign Up Page', () => {
          await userEvent.type(passwordInput, "P4ssword");
          await userEvent.type(passwordRepeatInput, "P4sword");
 
-         const text = await screen.findByText("Password mismatch");
+         const text = await screen.findByText("Password must match");
          expect(text).toBeInTheDocument();
       });
       xit.each`
@@ -279,6 +281,7 @@ describe('Sign Up Page', () => {
       });
    });
    describe('Internationalization', () => {
+      let olBtn, enBtn, password, passwordRepeat, username, email, btn;
       const setup = function () {
          const app = {
             components: {
@@ -297,9 +300,22 @@ describe('Sign Up Page', () => {
                plugins: [i18n]
             }
          });
+         olBtn = screen.queryByTitle("ol");
+         enBtn = screen.queryByTitle("en");
+         username = screen.queryByLabelText(en.username);
+         email = screen.queryByLabelText(en.email);
+         password = screen.queryByLabelText(en.password);
+         passwordRepeat = screen.queryByLabelText(en.passwordRepeat);
+         btn = screen.queryByRole("button", { name: en.signup });
       }
+
+      afterEach(function () {
+         i18n.locale = 'en'
+      });
+
       it('initially displays copy in english', async function () {
          setup();
+         // screen.debug();
          expect(screen.queryByRole("heading", { name: en.signup })).toBeInTheDocument();
          expect(screen.queryByRole("button", { name: en.signup })).toBeInTheDocument();
          expect(screen.queryByLabelText(en.username),).toBeInTheDocument();
@@ -310,7 +326,6 @@ describe('Sign Up Page', () => {
       it('displays copy in ol after selecting it', async function () {
          setup();
 
-         const olBtn = screen.queryByTitle("ol");
          await userEvent.click(olBtn);
 
          expect(screen.queryByRole("heading", { name: ol.signup })).toBeInTheDocument();
@@ -323,10 +338,7 @@ describe('Sign Up Page', () => {
       it('displays copy in english after page is translated to ol', async function () {
          setup();
 
-         const olBtn = screen.queryByTitle("ol");
          await userEvent.click(olBtn);
-
-         const enBtn = screen.queryByTitle("en");
          await userEvent.click(enBtn);
 
          expect(screen.queryByRole("heading", { name: en.signup })).toBeInTheDocument();
@@ -336,5 +348,32 @@ describe('Sign Up Page', () => {
          expect(screen.queryByLabelText(en.password)).toBeInTheDocument();
          expect(screen.queryByLabelText(en.passwordRepeat)).toBeInTheDocument();
       });
-   })
+      it('displays password mismatch validation in ol', async function () {
+         setup();
+
+         await userEvent.click(olBtn);
+
+         password = screen.queryByLabelText(ol.password);
+         passwordRepeat = screen.queryByLabelText(ol.passwordRepeat);
+
+         await userEvent.type(password, "password");
+         await userEvent.type(passwordRepeat, "pword");
+
+         const validation = screen.queryByText(ol.passwordMismatch);
+
+         expect(validation).toBeInTheDocument();
+      });
+      xit('sends accept-language en to server', async function () {
+         setup();
+
+         await userEvent.type(username, "user1");
+         await userEvent.type(email, "password@gmail.com");
+         await userEvent.type(password, "password");
+         await userEvent.type(passwordRepeat, "password");
+         await userEvent.click(btn);
+         await screen.findByText("Please check your email to activate your account");
+
+         expect(acceptLanguageHeader).toBe('en');
+      });
+   });
 });

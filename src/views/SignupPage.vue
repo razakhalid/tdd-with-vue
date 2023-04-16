@@ -29,7 +29,7 @@
           :label="$t('passwordRepeat')"
           id="password-repeat"
           type="password"
-          :help="hasPasswordMismatch ? 'Password mismatch' : ''"
+          :help="hasPasswordMismatch ? $t('passwordMismatch') : ''"
           @custom-input="onChangePasswordRepeat"
       ></Input>
 
@@ -50,6 +50,7 @@
 <script>
 import axios from 'axios';
 import Input from '../components/Input.vue';
+import { signup } from '../api/api-calls';
 export default {
   name: "SignupPage",
   data() {
@@ -91,7 +92,7 @@ export default {
     submit(evt) {
       evt.preventDefault();
       this.loading = true;
-      axios.post('/api/1.0/users', {
+      signup({
         username: this.username,
         email: this.email,
         password: this.password
