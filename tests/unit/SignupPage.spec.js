@@ -7,55 +7,61 @@ import "whatwg-fetch";
 import { setupServer } from "msw/node";
 import { rest } from "msw";
 import i18n from '../../src/i18n/i18n';
+const en = require('@/i18n/en.js');
+const ol = require('@/i18n/ol.js');
 
 describe('Sign Up Page', () => {
    describe('Layout', () => {
-      fit("has a header that says 'Sign Up'", () => {
+      const setup = function () {
          render(SignupPage, {
             global: {
                plugins: [i18n]
             }
          });
+      }
+
+      it("has a header that says 'Sign Up'", () => {
+         setup()
          const header = screen.queryByRole("heading", { name: "Sign Up"});
          expect(header).not.toBeNull();
       });
       it("has a username input", () => {
-         render(SignupPage);
+         setup()
          const input = screen.queryByLabelText("Username");
          expect(input).toBeInTheDocument();
       });
       it("has a email input", () => {
-         render(SignupPage);
+         setup()
          const input = screen.queryByLabelText("E-mail");
          expect(input).toBeInTheDocument();
       });
       it("has a password input", () => {
-         render(SignupPage);
+         setup()
          const input = screen.queryByLabelText("Password");
          expect(input).toBeInTheDocument();
       });
       it("has password type for password input", () => {
-         render(SignupPage);
+         setup()
          const input = screen.queryByLabelText("Password");
          expect(input.type).toBe("password");
       });
       it("has a password repeat input", () => {
-         render(SignupPage);
+         setup()
          const input = screen.queryByLabelText("Password Repeat");
          expect(input).toBeInTheDocument();
       });
       it("has password type for password repeat input", () => {
-         render(SignupPage);
+         setup()
          const input = screen.queryByLabelText("Password Repeat");
          expect(input.type).toBe("password");
       });
       it("has a button that says 'Sign Up'", () => {
-         render(SignupPage);
+         setup()
          const button = screen.queryByRole("button", { name: "Sign Up"});
          expect(button).toBeInTheDocument();
       });
       it("button is initially disabled", () => {
-         render(SignupPage);
+         setup()
          const button = screen.queryByRole("button", { name: "Sign Up"});
          expect(button).toBeDisabled();
       });
@@ -83,7 +89,11 @@ describe('Sign Up Page', () => {
 
       let button, passwordInput, passwordRepeatInput, usernameInput;
       const setup = async function () {
-         render(SignupPage);
+         render(SignupPage, {
+            global: {
+               plugins: [i18n]
+            }
+         });
          usernameInput = screen.queryByLabelText("Username");
          const emailInput = screen.queryByLabelText("E-mail");
          passwordInput = screen.queryByLabelText("Password");
@@ -267,4 +277,19 @@ describe('Sign Up Page', () => {
          });
       });
    });
+   describe('Internationalization', () => {
+      it('initially displays copy in english', async function () {
+         render(SignupPage, {
+            global: {
+               plugins: [i18n]
+            }
+         });
+         expect(screen.queryByRole("heading", { name: en.signup })).toBeInTheDocument();
+         expect(screen.queryByRole("button", { name: en.signup })).toBeInTheDocument();
+         expect(screen.queryByLabelText(en.username),).toBeInTheDocument();
+         expect(screen.queryByLabelText(en.email)).toBeInTheDocument();
+         expect(screen.queryByLabelText(en.password)).toBeInTheDocument();
+         expect(screen.queryByLabelText(en.passwordRepeat)).toBeInTheDocument();
+      });
+   })
 });
