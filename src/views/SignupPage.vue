@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div data-testid="signup-page">
     <form data-testid="signup-form" v-show="!signupSuccess">
       <h1>{{ $t('signup') }}</h1>
 
