@@ -9,6 +9,7 @@ import { rest } from "msw";
 import i18n from '../../src/i18n/i18n';
 const en = require('@/i18n/en.js');
 const ol = require('@/i18n/ol.js');
+import LanguageSelector from "@/components/LanguageSelector.vue";
 
 describe('Sign Up Page', () => {
    describe('Layout', () => {
@@ -278,12 +279,56 @@ describe('Sign Up Page', () => {
       });
    });
    describe('Internationalization', () => {
-      it('initially displays copy in english', async function () {
-         render(SignupPage, {
+      const setup = function () {
+         const app = {
+            components: {
+               SignupPage,
+               LanguageSelector
+            },
+            template: `
+               <div>
+                  <SignupPage></SignupPage>
+                  <LanguageSelector></LanguageSelector>
+               </div>
+            `
+         }
+         render(app, {
             global: {
                plugins: [i18n]
             }
          });
+      }
+      it('initially displays copy in english', async function () {
+         setup();
+         expect(screen.queryByRole("heading", { name: en.signup })).toBeInTheDocument();
+         expect(screen.queryByRole("button", { name: en.signup })).toBeInTheDocument();
+         expect(screen.queryByLabelText(en.username),).toBeInTheDocument();
+         expect(screen.queryByLabelText(en.email)).toBeInTheDocument();
+         expect(screen.queryByLabelText(en.password)).toBeInTheDocument();
+         expect(screen.queryByLabelText(en.passwordRepeat)).toBeInTheDocument();
+      });
+      it('displays copy in ol after selecting it', async function () {
+         setup();
+
+         const olBtn = screen.queryByTitle("ol");
+         await userEvent.click(olBtn);
+
+         expect(screen.queryByRole("heading", { name: ol.signup })).toBeInTheDocument();
+         expect(screen.queryByRole("button", { name: ol.signup })).toBeInTheDocument();
+         expect(screen.queryByLabelText(ol.username),).toBeInTheDocument();
+         expect(screen.queryByLabelText(ol.email)).toBeInTheDocument();
+         expect(screen.queryByLabelText(ol.password)).toBeInTheDocument();
+         expect(screen.queryByLabelText(ol.passwordRepeat)).toBeInTheDocument();
+      });
+      it('displays copy in english after page is translated to ol', async function () {
+         setup();
+
+         const olBtn = screen.queryByTitle("ol");
+         await userEvent.click(olBtn);
+
+         const enBtn = screen.queryByTitle("en");
+         await userEvent.click(enBtn);
+
          expect(screen.queryByRole("heading", { name: en.signup })).toBeInTheDocument();
          expect(screen.queryByRole("button", { name: en.signup })).toBeInTheDocument();
          expect(screen.queryByLabelText(en.username),).toBeInTheDocument();

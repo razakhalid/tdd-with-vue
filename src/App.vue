@@ -1,14 +1,19 @@
 <template>
 <!--  <router-view/>-->
-  <SignupPage></SignupPage>
+  <div>
+    <SignupPage></SignupPage>
+    <LanguageSelector></LanguageSelector>
+  </div>
 </template>
 
 <script>
 import SignupPage from "@/views/SignupPage.vue";
+import LanguageSelector from "@/components/LanguageSelector.vue";
 export default {
   name: "App",
   components: {
-    SignupPage
+    SignupPage,
+    LanguageSelector
   }
 }
 </script>
