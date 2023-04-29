@@ -1,6 +1,5 @@
 import SignupPage from "../../src/views/SignupPage.vue";
 import { render, screen, waitFor } from "@testing-library/vue";
-import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 // import axios from 'axios';
 import "whatwg-fetch";
@@ -308,10 +307,6 @@ describe('Sign Up Page', () => {
          passwordRepeat = screen.queryByLabelText(en.passwordRepeat);
          btn = screen.queryByRole("button", { name: en.signup });
       }
-
-      afterEach(function () {
-         i18n.locale = 'en'
-      });
 
       it('initially displays copy in english', async function () {
          setup();

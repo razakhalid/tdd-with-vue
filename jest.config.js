@@ -6,5 +6,6 @@ module.exports = {
   ],
     moduleNameMapper: {
         "axios": "axios/dist/node/axios.cjs"
-    }
+    },
+    setupFilesAfterEnv: ["./tests/setupTest.js"]
 }

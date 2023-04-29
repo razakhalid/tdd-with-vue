@@ -1,6 +1,9 @@
 <template>
 <!--  <router-view/>-->
   <div>
+    <a @click.prevent="onClickLink" href="/" title="Home">{{ $t('home') }}</a>
+    <a @click.prevent="onClickLink" href="/signup">{{ $t('signup') }}</a>
+
     <HomePage v-if="path === '/'"></HomePage>
     <SignupPage v-else-if="path === '/signup'"></SignupPage>
     <LoginPage v-else-if="path === '/login'"></LoginPage>
@@ -17,8 +20,16 @@ import LoginPage from "@/views/LoginPage.vue";
 import UserPage from "@/views/UserPage.vue";
 export default {
   name: "App",
-  computed: {
-    path: () => window.location.pathname
+  data() {
+    return {
+      path: window.location.pathname
+    }
+  },
+  methods: {
+    onClickLink(evt) {
+      this.path = evt.target.attributes.href.value;
+      window.history.pushState({}, "", this.path);
+    }
   },
   components: {
     SignupPage,
