@@ -6,5 +6,6 @@ module.exports = {
   "passwordRepeat":"[ol] Password Repeat",
   "loading":"[ol] Loading...",
   "passwordMismatch": "[ol] Password must match",
-  "home": "[ol] Home"
+  "home": "[ol] Home",
+  "login": "[ol] Login"
 }

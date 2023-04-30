@@ -1,13 +1,11 @@
 <template>
 <!--  <router-view/>-->
   <div>
-    <a @click.prevent="onClickLink" href="/" title="Home">{{ $t('home') }}</a>
-    <a @click.prevent="onClickLink" href="/signup">{{ $t('signup') }}</a>
+    <router-link to="/">{{ $t('home') }}</router-link>
+    <router-link to="/signup">{{ $t('signup') }}</router-link>
+    <router-link to="/login">{{ $t('login') }}</router-link>
 
-    <HomePage v-if="path === '/'"></HomePage>
-    <SignupPage v-else-if="path === '/signup'"></SignupPage>
-    <LoginPage v-else-if="path === '/login'"></LoginPage>
-    <UserPage v-else-if="path.startsWith('/user/')"></UserPage>
+    <router-view></router-view>
     <LanguageSelector></LanguageSelector>
   </div>
 </template>
@@ -32,11 +30,7 @@ export default {
     }
   },
   components: {
-    SignupPage,
-    LanguageSelector,
-    HomePage,
-    LoginPage,
-    UserPage
+    LanguageSelector
   }
 }
 </script>
