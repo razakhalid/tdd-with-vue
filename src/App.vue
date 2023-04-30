@@ -4,6 +4,7 @@
     <router-link to="/">{{ $t('home') }}</router-link>
     <router-link to="/signup">{{ $t('signup') }}</router-link>
     <router-link to="/login">{{ $t('login') }}</router-link>
+    <router-link to="/activate">{{ $t('activate') }}</router-link>
 
     <router-view></router-view>
     <LanguageSelector></LanguageSelector>

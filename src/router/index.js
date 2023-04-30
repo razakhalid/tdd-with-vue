@@ -3,6 +3,7 @@ import HomePage from "@/views/HomePage.vue";
 import SignupPage from "@/views/SignupPage.vue";
 import LoginPage from "@/views/LoginPage.vue";
 import UserPage from "@/views/UserPage.vue";
+import AccountActivationPage from "@/views/AccountActivationPage.vue";
 
 const routes = [
   {
@@ -25,6 +26,10 @@ const routes = [
     name: 'User',
     component: UserPage
   },
+  {
+    path: '/activate/:token',
+    component: AccountActivationPage
+  }
 ]
 
 const router = createRouter({

@@ -23,6 +23,8 @@ describe('Routing',  function () {
     ${'/login'} | ${'login-page'}
     ${'/user/1'} | ${'user-page'} 
     ${'/user/2'} | ${'user-page'} 
+    ${'/activate/1234'} | ${'activation-page'} 
+    ${'/activate/5678'} | ${'activation-page'} 
     `("displays $pageTestId when path is $path", async function ({ path, pageTestId }) {
         await setup(path);
         const page = screen.queryByTestId(pageTestId);
@@ -40,6 +42,10 @@ describe('Routing',  function () {
     ${'/login'} | ${'signup-page'}
     ${'/login'} | ${'home-page'}
     ${'/login'} | ${'user-page'}
+    ${'/login'} | ${'activation-page'}
+    ${'/activate/123'} | ${'home-page'}
+    ${'/activate/123'} | ${'login-page'}
+    ${'/activate/123'} | ${'user-page'}
     ${'/user/1'} | ${'home-page'}
     `("does not display $pageTestId when path is $path", async function ({ path, pageTestId }) {
         await setup(path)
