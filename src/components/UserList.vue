@@ -13,14 +13,14 @@
       </ul>
 
       <button
-          @click="loadPrevious"
+          @click="loadData(page.page - 1)"
           v-if="page.page !== 0"
       >
         &lt previous
       </button>
 
       <button
-          @click="loadNext"
+          @click="loadData(page.page + 1)"
           v-if="page.totalPages > page.page + 1"
       >next ></button>
     </div>
@@ -43,20 +43,11 @@ export default {
     }
   },
   async mounted() {
-    try {
-      const response = await loadUsers();
-      this.page = response.data;
-    } catch (err) {
-      console.error(err);
-    }
+    this.loadData();
   },
   methods: {
-    async loadNext() {
-      const response = await loadUsers(this.page.page + 1, this.page.size);
-      this.page = response.data;
-    },
-    async loadPrevious() {
-      const response = await loadUsers(this.page.page - 1, this.page.size);
+    async loadData(pageIndex) {
+      const response = await loadUsers(pageIndex, this.page.size);
       this.page = response.data;
     }
   }
