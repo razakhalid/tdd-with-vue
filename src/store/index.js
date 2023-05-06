@@ -1,14 +1,30 @@
-import { createStore } from 'vuex'
+import { createStore } from "vuex";
 
-export default createStore({
-  state: {
-  },
-  getters: {
+const store = createStore({
+  state() {
+    return {
+      isLoggedIn: false
+    }
   },
   mutations: {
-  },
-  actions: {
-  },
-  modules: {
+    loginSuccess(state, payload) {
+      const { id } = payload;
+      state.isLoggedIn = true;
+      state.id = id;
+    },
+    reset(state) {
+      state.isLoggedIn = false;
+      delete state.id;
+    }
   }
+});
+
+store.subscribe((mutation, state) => {
+  localStorage.setItem('auth', JSON.stringify(state));
 })
+
+export const resetAuthState = function () {
+  store.commit('reset');
+}
+
+export default store;

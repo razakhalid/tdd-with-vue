@@ -1,9 +1,23 @@
 <template>
 <!--  <router-view/>-->
-  <div>
+  <div
+      style="display: flex; justify-content: space-around;"
+  >
     <router-link to="/">{{ $t('home') }}</router-link>
-    <router-link to="/signup">{{ $t('signup') }}</router-link>
-    <router-link to="/login">{{ $t('login') }}</router-link>
+    <router-link
+        to="/signup"
+        v-if="!$store.state.isLoggedIn"
+    >{{ $t('signup') }}</router-link>
+    <router-link
+        to="/login"
+        v-if="!$store.state.isLoggedIn"
+    >{{ $t('login') }}</router-link>
+
+    <router-link
+        :to="`/user/${$store.state.id}`"
+        v-if="$store.state.isLoggedIn"
+    >My Profile</router-link>
+
     <router-link to="/activate">{{ $t('activate') }}</router-link>
 
     <router-view></router-view>
